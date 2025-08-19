@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRG281_Project_Milestone2", "PRG281_Project_Milestone2\PRG281_Project_Milestone2.csproj", "{A1ED5D1C-03CD-4E9D-B330-B96B43463D23}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1ED5D1C-03CD-4E9D-B330-B96B43463D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1ED5D1C-03CD-4E9D-B330-B96B43463D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1ED5D1C-03CD-4E9D-B330-B96B43463D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1ED5D1C-03CD-4E9D-B330-B96B43463D23}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D733AB9A-D872-4678-8C65-D815450B3D62}
+	EndGlobalSection
+EndGlobal
