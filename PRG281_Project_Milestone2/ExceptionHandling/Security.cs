@@ -9,24 +9,10 @@ namespace PRG281_Project_Milestone2
 {
     public static class Security
     {
-        // Hash a password using SHA256
-        public static string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder sb = new StringBuilder();
-                foreach (byte b in bytes)
-                    sb.Append(b.ToString("x2"));
-                return sb.ToString();
-            }
-        }
-
         // Verify entered password against stored hash
-        public static bool VerifyPassword(string enteredPassword, string storedHash)
+        public static bool VerifyPassword(string enteredPassword, string storedPass)
         {
-            string enteredHash = HashPassword(enteredPassword);
-            return enteredHash.Equals(storedHash);
+            return enteredPassword.Equals(storedPass);
         }
 
         // Simple login system for demonstration
@@ -34,14 +20,14 @@ namespace PRG281_Project_Milestone2
         {
             // In a real system, this would be stored in a DB/file
             string storedUser = "admin";
-            string storedHash = HashPassword("password123");
+            string storedPass = "password123";
 
-            if (username == storedUser && VerifyPassword(password, storedHash))
+            if (username == storedUser && VerifyPassword(password, storedPass))
             {
-                Console.WriteLine("✅ Login successful!");
+                Console.WriteLine("Login successful!");
                 return true;
             }
-            Console.WriteLine("❌ Invalid login.");
+            Console.WriteLine("Invalid login.");
             return false;
         }
     }

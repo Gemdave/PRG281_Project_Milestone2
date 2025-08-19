@@ -11,6 +11,16 @@ namespace PRG281_Project_Milestone2
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Please login to access the Library System.");
+            Console.Write("Username: ");
+            string user = Console.ReadLine();
+            Console.Write("Password: ");
+            string pass = Console.ReadLine();
+            if (!Security.Login(user, pass))
+            {
+                Console.WriteLine("Exiting program...");
+                return;
+            }
             Console.WriteLine("--- Library Management System ---");
 
 
