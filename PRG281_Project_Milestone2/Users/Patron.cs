@@ -9,11 +9,11 @@ namespace PRG281_Project_Milestone2
 {
     public class Patron : User
     {
+        public override string Role => "Patron";
         public List<Book> BorrowedBooks { get; } = new List<Book>();
-
         public int MaxLimit { get; set; } = 5;
-
-        // BORROW BOOK PROCESS
+        /*--------------------Borrow Book Process--------------------*/
+        
         public Transaction BorrowBook(Book book)
         {
             if (book == null)
@@ -48,7 +48,7 @@ namespace PRG281_Project_Milestone2
             };
         }
 
-        // RETURN BOOK PROCESS
+        /*--------------------Return Book Process--------------------*/
         public Transaction ReturnBook(Book book)
         {
             if (!BorrowedBooks.Contains(book))

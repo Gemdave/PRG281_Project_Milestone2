@@ -1,7 +1,10 @@
-﻿using System;
+﻿using PRG281_Project_Milestone2;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,45 +15,78 @@ namespace PRG281_Project_Milestone2
         private static Library library = new Library();
         private static Patron currentUser = new Patron();
         private static LibrarySystem librarySystem = new LibrarySystem();
+        public string UserRole;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Please login to access the Library System.");
-            Console.Write("Username: ");
-            string user = Console.ReadLine();
-            Console.Write("Password: ");
-            string pass = Console.ReadLine();
-
-            if (!Security.Login(user, pass))
+            LibrarySystem librarySystem = new LibrarySystem();
+            User loggedInUser = null;
+            bool Exit = false;
+            while (!Exit)
             {
-                Console.WriteLine("Exiting program...");
-                return;
+                Console.Clear();
+                Console.WriteLine("Login?:");
+                Console.WriteLine("1. Continue To login");
+                Console.WriteLine("2. Exit");
+                string choice = GetInput("Select an option: ");
+                switch (choice)
+                {
+                    case "1":
+                        while (loggedInUser == null)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Please login to access the Library System.");
+                            Console.Write("Username: ");
+                            string username = Console.ReadLine();
+                            Console.Write("Password: ");
+                            string password = Console.ReadLine();
+                            loggedInUser = Security.Login(username, password);
+                            if (loggedInUser == null)
+                            {
+                                Console.WriteLine("Invalid credentials. Try again.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Login Succes");
+                            }
+                            Console.ReadLine();
+                        }
+
+                        Console.WriteLine($"Welcome, {loggedInUser.Username} ({loggedInUser.Role})");
+
+                        // Subscribe librarian to overdue alerts
+                        Staff librarian = new Staff();
+                        librarySystem.OverdueAlert += librarian.HandleOverdueAlert;
+
+                        Console.WriteLine("--- Library Management System ---");
+
+                        InitializeLibrary();
+
+                        ShowMainMenu(loggedInUser);
+                        loggedInUser = null;
+                        break;
+                    case "2":
+                        Exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid selection");
+                        return;
+                }                
             }
-
-            // Subscribe librarian to overdue alerts
-            Staff librarian = new Staff();
-            librarySystem.OverdueAlert += librarian.HandleOverdueAlert;
-
-            Console.WriteLine("\n--- Library Management System ---");
-
-            InitializeLibrary();
-
-            ShowMainMenu();
-
-            Console.WriteLine("\nProgram finished. Press any key to exit.");
+            Console.Clear() ;
+            Console.WriteLine("Program finished. Press any key to exit.");
             Console.ReadKey();
         }
-
+        /*--------------------Create library--------------------*/
         static void InitializeLibrary()
         {
             library.AddBook(new Book { ISBN = "978-0131103627", Title = "C# Programming", Author = "John Doe", TotalCopies = 3, AvailableCopies = 3 });
             library.AddBook(new Book { ISBN = "978-0321765723", Title = "Data Structures", Author = "Jane Smith", TotalCopies = 2, AvailableCopies = 2 });
-
             // Sync with LibrarySystem
             librarySystem.Books.AddRange(library.Books);
         }
-
-        static void ShowMainMenu()
+        /*--------------------Main Menu--------------------*/
+        static void ShowMainMenu(User userRole)
         {
             while (true)
             {
@@ -66,11 +102,18 @@ namespace PRG281_Project_Milestone2
                 switch (choice)
                 {
                     case "1":
-                        BookOperations();
+                        if (userRole is Staff staff)
+                        {
+                            ShowStaffMenu(librarySystem);
+                        }
+                        else if (userRole is Patron patron)
+                        {
+                            ShowPatronMenu(patron, librarySystem);
+                        }
                         break;
                     case "2":
                         librarySystem.MonitorOverdue();
-                        Console.WriteLine("\nPress any key to continue...");
+                        Console.WriteLine("Press any key to continue...");
                         Console.ReadKey();
                         break;
                     case "3":
@@ -84,10 +127,70 @@ namespace PRG281_Project_Milestone2
                 }
             }
         }
+        /*--------------------Staff Menu--------------------*/
+        static void ShowStaffMenu(LibrarySystem library)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=== STAFF MENU ===");
+                Console.WriteLine("1. Monitor Overdue Books");
+                Console.WriteLine("2. Add New Book");
+                Console.WriteLine("3. Exit");
 
+                string choice = GetInput("Enter choice: ");
+                switch (choice)
+                {
+                    case "1":
+                        library.MonitorOverdue();
+                        break;
+                    case "2":
+                        AddNewBook();
+                        break;
+                    case "3":
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
+                }
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+        }
+        /*--------------------Patron Menu--------------------*/
+        static void ShowPatronMenu(Patron patron, LibrarySystem library)
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("=== PATRON MENU ===");
+                Console.WriteLine("1. Borrow Book");
+                Console.WriteLine("2. Return Book");
+                Console.WriteLine("3. Exit");
+
+                string choice = GetInput("Enter choice: ");
+                switch (choice)
+                {
+                    case "1":
+                        CheckOutBook();
+                        break;
+                    case "2":
+                        ReturnBook();
+                        break;
+                    case "3":
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
+                }
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+        }
+        /*--------------------Borrowed Books function--------------------*/
         static void ShowBorrowedBooks()
         {
-            Console.WriteLine("\nYour Borrowed Books:");
+            Console.WriteLine("Your Borrowed Books:");
             if (!currentUser.BorrowedBooks.Any())
             {
                 Console.WriteLine("You have no borrowed books.");
@@ -99,45 +202,10 @@ namespace PRG281_Project_Milestone2
                     Console.WriteLine($"- {book.Title} (ISBN: {book.ISBN})");
                 }
             }
-            Console.WriteLine("\nPress any key to continue...");
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
-
-        static void BookOperations()
-        {
-            while (true)
-            {
-                Console.Clear();
-                Console.WriteLine("Book Operations:");
-                Console.WriteLine("1. Check Out Book");
-                Console.WriteLine("2. Return Book");
-                Console.WriteLine("3. Add New Book");
-                Console.WriteLine("4. Back to Main Menu");
-
-                string choice = GetInput("Select an action: ");
-
-                switch (choice)
-                {
-                    case "1":
-                        CheckOutBook();
-                        break;
-                    case "2":
-                        ReturnBook();
-                        break;
-                    case "3":
-                        AddNewBook();
-                        break;
-                    case "4":
-                        return;
-                    default:
-                        Console.WriteLine("Invalid choice, try again.");
-                        break;
-                }
-                Console.WriteLine("\nPress any key to continue...");
-                Console.ReadKey();
-            }
-        }
-
+        /*--------------------Checkout Function--------------------*/
         static void CheckOutBook()
         {
             string isbn = GetInput("Enter ISBN to check out: ");
@@ -157,7 +225,7 @@ namespace PRG281_Project_Milestone2
                 librarySystem.Transactions.Add(transaction);
             }
         }
-
+        /*--------------------Return Function--------------------*/
         static void ReturnBook()
         {
             string isbn = GetInput("Enter ISBN to return: ");
@@ -175,7 +243,7 @@ namespace PRG281_Project_Milestone2
                 librarySystem.Transactions.Add(transaction);
             }
         }
-
+        /*--------------------New Book Function--------------------*/
         static void AddNewBook()
         {
             string isbn = GetInput("Enter ISBN: ");
@@ -188,13 +256,19 @@ namespace PRG281_Project_Milestone2
 
             string title = GetInput("Enter Title: ");
             string author = GetInput("Enter Author: ");
-            if (!int.TryParse(GetInput("Enter total copies: "), out int totalCopies) ||
-                !int.TryParse(GetInput("Enter available copies: "), out int availableCopies))
+            //Ensure that the user enters Integer values
+            int totalCopies = 1, availableCopies = 1;
+            try
+            {
+                totalCopies = int.Parse(GetInput("Enter total copies: "));
+                availableCopies = int.Parse(GetInput("Enter available copies: "));
+            }
+            catch
             {
                 Console.WriteLine("Copies must be numbers.");
-                return;
+                return ;
             }
-
+            //Ensure there are not more AvailableCopie than TotalCopies
             if (availableCopies > totalCopies)
             {
                 Console.WriteLine("Available copies cannot exceed total copies.");
@@ -214,7 +288,7 @@ namespace PRG281_Project_Milestone2
             librarySystem.Books.Add(newBook);
             Console.WriteLine("Book added successfully.");
         }
-
+        /*--------------------User Input Shortcut--------------------*/
         static string GetInput(string prompt)
         {
             Console.Write(prompt);

@@ -6,5 +6,10 @@ using System.Threading.Tasks;
 
 namespace PRG281_Project_Milestone2
 {
-    public class User { }
+    public abstract class User
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public abstract string Role { get; }
+    }
 }
