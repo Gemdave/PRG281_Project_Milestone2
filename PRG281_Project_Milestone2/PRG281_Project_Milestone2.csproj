@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="LibraryOperations\Library.cs" />
     <Compile Include="LibraryOperations\Books.cs" />
-    <Compile Include="ExceptionHandling\ErrorChecking.cs" />
     <Compile Include="LibraryOperations\LibrarySystems.cs" />
     <Compile Include="LibraryOperations\OverdueEvents.cs" />
     <Compile Include="LibraryOperations\Transaction.cs" />

@@ -18,13 +18,13 @@ namespace PRG281_Project_Milestone2
 
         public void MonitorOverdue()
         {
-            // Leave as is per your request
             OnOverdueAlert(new OverdueEventArgs("Lesedi Mawewe", "C# Programming"));
         }
 
         protected virtual void OnOverdueAlert(OverdueEventArgs e)
         {
             OverdueAlert?.Invoke(this, e);
+            Console.WriteLine($"ALERT: {e.PatronName} has an overdue book: \"{ e.BookTitle}\"");
         }
     }
 }
