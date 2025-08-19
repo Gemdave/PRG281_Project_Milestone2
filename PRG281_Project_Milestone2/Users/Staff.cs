@@ -19,5 +19,4 @@ namespace PRG281_Project_Milestone2
             Console.WriteLine($"--------------------------\n");
         }
     }
-
 }
